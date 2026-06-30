@@ -55,6 +55,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:4173",
         "http://127.0.0.1:4173",
+        "https://traject-ml-navigator.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
