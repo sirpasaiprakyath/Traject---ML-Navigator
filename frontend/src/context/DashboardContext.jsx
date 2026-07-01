@@ -626,8 +626,31 @@ export function DashboardProvider({ children }) {
       if (isFirebaseMock) {
         localStorage.setItem("traject_report", JSON.stringify(reportData));
       } else {
+        // Sanitize object recursively to remove/convert undefined fields for Firestore compatibility
+        const cleanDataForFirestore = (val) => {
+          if (val === undefined) return null;
+          if (val === null) return null;
+          if (Array.isArray(val)) {
+            return val.map(cleanDataForFirestore);
+          }
+          if (typeof val === "object") {
+            const res = {};
+            for (const key in val) {
+              if (Object.prototype.hasOwnProperty.call(val, key)) {
+                const cleaned = cleanDataForFirestore(val[key]);
+                if (cleaned !== undefined && cleaned !== null) {
+                  res[key] = cleaned;
+                }
+              }
+            }
+            return res;
+          }
+          return val;
+        };
+        const sanitizedReportData = cleanDataForFirestore(reportData);
+
         const reportsColRef = collection(db, "users", currentUser.uid, "reports");
-        await addDoc(reportsColRef, reportData);
+        await addDoc(reportsColRef, sanitizedReportData);
       }
 
       setUpdatePipelineState("done");

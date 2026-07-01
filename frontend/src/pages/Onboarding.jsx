@@ -648,8 +648,31 @@ export default function Onboarding() {
         const userRef = doc(db, "users", currentUser.uid);
         await setDoc(userRef, { onboardingComplete: true }, { merge: true });
         
+        // Sanitize object recursively to remove/convert undefined fields for Firestore compatibility
+        const cleanDataForFirestore = (val) => {
+          if (val === undefined) return null;
+          if (val === null) return null;
+          if (Array.isArray(val)) {
+            return val.map(cleanDataForFirestore);
+          }
+          if (typeof val === "object") {
+            const res = {};
+            for (const key in val) {
+              if (Object.prototype.hasOwnProperty.call(val, key)) {
+                const cleaned = cleanDataForFirestore(val[key]);
+                if (cleaned !== undefined && cleaned !== null) {
+                  res[key] = cleaned;
+                }
+              }
+            }
+            return res;
+          }
+          return val;
+        };
+        const sanitizedReportData = cleanDataForFirestore(reportData);
+
         const reportsColRef = collection(db, "users", currentUser.uid, "reports");
-        await addDoc(reportsColRef, reportData);
+        await addDoc(reportsColRef, sanitizedReportData);
       }
 
       setPipelineState("done");
@@ -1708,18 +1731,18 @@ export default function Onboarding() {
                           method: "assessment",
                           last_assessed_at: new Date().toISOString(),
                           reasoning: assessmentResult.reasoning,
-                          problems: assessedSkill === "DSA" ? dsaProblems : undefined,
-                          easyIndep: assessedSkill === "DSA" ? dsaEasyIndep : undefined,
-                          topics: assessedSkill === "DSA" ? dsaTopics : undefined,
-                          sqlConcepts: assessedSkill === "SQL" ? sqlConcepts : undefined,
-                          mlConcepts: assessedSkill === "ML Knowledge" ? mlConcepts : undefined,
-                          projCount: assessedSkill === "Projects" ? projCountAssessed : undefined,
-                          projDeploy: assessedSkill === "Projects" ? projDeployAssessed : undefined,
-                          projFeatures: assessedSkill === "Projects" ? projFeaturesAssessed : undefined,
-                          statsConcepts: assessedSkill === "Statistics" ? statsConcepts : undefined,
-                          mlopsConcepts: assessedSkill === "MLOps" ? mlopsConcepts : undefined,
-                          sysdesignConcepts: assessedSkill === "System Design" ? sysdesignConcepts : undefined,
-                          toolsConcepts: assessedSkill === "Tools" ? toolsConcepts : undefined
+                          problems: assessedSkill === "DSA" ? dsaProblems : null,
+                          easyIndep: assessedSkill === "DSA" ? dsaEasyIndep : null,
+                          topics: assessedSkill === "DSA" ? dsaTopics : null,
+                          sqlConcepts: assessedSkill === "SQL" ? sqlConcepts : null,
+                          mlConcepts: assessedSkill === "ML Knowledge" ? mlConcepts : null,
+                          projCount: assessedSkill === "Projects" ? projCountAssessed : null,
+                          projDeploy: assessedSkill === "Projects" ? projDeployAssessed : null,
+                          projFeatures: assessedSkill === "Projects" ? projFeaturesAssessed : null,
+                          statsConcepts: assessedSkill === "Statistics" ? statsConcepts : null,
+                          mlopsConcepts: assessedSkill === "MLOps" ? mlopsConcepts : null,
+                          sysdesignConcepts: assessedSkill === "System Design" ? sysdesignConcepts : null,
+                          toolsConcepts: assessedSkill === "Tools" ? toolsConcepts : null
                         }
                       }));
                       setActiveModes(prev => ({ ...prev, [assessedSkill]: "assessment" }));
