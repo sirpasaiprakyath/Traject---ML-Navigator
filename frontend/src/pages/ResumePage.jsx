@@ -89,8 +89,20 @@ export default function ResumePage() {
       });
       
       if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || "Could not analyze resume. Make sure it is not a scanned image.");
+        let errMsg = "Could not analyze resume. Make sure it is not a scanned image.";
+        try {
+          const clone = res.clone();
+          const errJson = await clone.json();
+          if (errJson && errJson.detail) {
+            errMsg = errJson.detail;
+          }
+        } catch (e) {
+          try {
+            const errText = await res.text();
+            if (errText) errMsg = errText;
+          } catch (e2) {}
+        }
+        throw new Error(errMsg);
       }
       
       const data = await res.json();
@@ -240,7 +252,7 @@ export default function ResumePage() {
           >
             <input 
               type="file" 
-              accept=".pdf" 
+              accept=".pdf,.docx,.txt" 
               onChange={handleResumeFileChange}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
@@ -250,10 +262,10 @@ export default function ResumePage() {
               </div>
               <div className="space-y-1 max-w-sm mx-auto">
                 <p className="text-sm font-bold text-white">
-                  Drag & drop your PDF resume here, or <span className="text-[#10B981] hover:underline">browse</span>
+                  Drag & drop your resume here, or <span className="text-[#10B981] hover:underline">browse</span>
                 </p>
                 <p className="text-xs text-gray-405 mt-1 leading-relaxed">
-                  Supports PDF formats up to 5MB. In-memory parsing only — we do not store your files.
+                  Supports PDF, DOCX, and TXT formats up to 5MB. In-memory parsing only — we do not store your files.
                 </p>
               </div>
             </div>

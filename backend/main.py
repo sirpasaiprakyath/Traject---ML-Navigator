@@ -338,6 +338,59 @@ def extract_pdf_text(file_bytes: bytes) -> str:
         return ""
 
 
+def extract_docx_text(file_bytes: bytes) -> str:
+    import zipfile
+    import xml.etree.ElementTree as ET
+    try:
+        with zipfile.ZipFile(io.BytesIO(file_bytes)) as docx:
+            doc_xml = docx.read('word/document.xml')
+            root = ET.fromstring(doc_xml)
+            paragraph_text = []
+            ns = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+            for p in root.findall('.//w:p', ns):
+                p_text = []
+                for t in p.findall('.//w:t', ns):
+                    if t.text:
+                        p_text.append(t.text)
+                if p_text:
+                    paragraph_text.append("".join(p_text))
+            return "\n".join(paragraph_text).strip()
+    except Exception as e:
+        print(f"DOCX extraction error: {e}", flush=True)
+        try:
+            with zipfile.ZipFile(io.BytesIO(file_bytes)) as docx:
+                doc_xml = docx.read('word/document.xml')
+                root = ET.fromstring(doc_xml)
+                texts = [elem.text for elem in root.iter() if elem.tag.endswith('}t') and elem.text]
+                return " ".join(texts).strip()
+        except Exception as e2:
+            print(f"Fallback DOCX extraction error: {e2}", flush=True)
+            return ""
+
+
+def extract_txt_text(file_bytes: bytes) -> str:
+    try:
+        try:
+            return file_bytes.decode('utf-8')
+        except UnicodeDecodeError:
+            return file_bytes.decode('latin-1')
+    except Exception as e:
+        print(f"TXT extraction error: {e}", flush=True)
+        return ""
+
+
+def extract_text_from_file(file_bytes: bytes, filename: str) -> str:
+    fn_lower = filename.lower()
+    if fn_lower.endswith(".pdf"):
+        return extract_pdf_text(file_bytes)
+    elif fn_lower.endswith(".docx"):
+        return extract_docx_text(file_bytes)
+    elif fn_lower.endswith(".txt"):
+        return extract_txt_text(file_bytes)
+    else:
+        return extract_txt_text(file_bytes)
+
+
 import re
 
 def segment_resume_sections(text: str) -> Dict[str, List[str]]:
@@ -1885,10 +1938,11 @@ def analyze_resume(
           flush=True)
     
     # Validate file type
-    if not file.filename.lower().endswith(".pdf"):
+    allowed_extensions = (".pdf", ".docx", ".txt")
+    if not file.filename.lower().endswith(allowed_extensions):
         raise HTTPException(
             status_code=400, 
-            detail="Only PDF files are supported"
+            detail="Only PDF, DOCX, and TXT files are supported"
         )
     
     # Read file
@@ -1900,11 +1954,11 @@ def analyze_resume(
         )
     
     # Extract text
-    resume_text = extract_pdf_text(file_bytes)
+    resume_text = extract_text_from_file(file_bytes, file.filename)
     if not resume_text or len(resume_text) < 100:
         raise HTTPException(
             status_code=422,
-            detail="Could not extract text from PDF. Make sure it is not a scanned image."
+            detail="Could not extract text from the file. Please ensure it is a valid text-based PDF, DOCX, or TXT file and not a scanned image."
         )
     
     print(f"Extracted {len(resume_text)} characters from resume", 
