@@ -285,9 +285,9 @@ export function DashboardProvider({ children }) {
       } else if (currentUser) {
         const docRef = doc(db, "users", currentUser.uid, "startedProjects", projectId);
         const projectData = {
-          title: proj.title,
-          difficulty: proj.difficulty,
-          estimatedDays: proj.estimatedDays,
+          title: proj.title || "",
+          difficulty: proj.difficulty || "Intermediate",
+          estimatedDays: proj.estimatedDays || 7,
           startedAt: new Date().toISOString()
         };
         await setDoc(docRef, projectData);
@@ -451,14 +451,14 @@ export function DashboardProvider({ children }) {
         for (const [cat, rating] of Object.entries(updateSkills)) {
           const skillId = cat.replace(/\s+/g, "_").toLowerCase();
           const skillRef = doc(db, "users", currentUser.uid, "skills", skillId);
-          const meta = skillsMetadata[cat];
+          const meta = skillsMetadata[cat] || { level: rating, confidence: null, evidence_count: 0, method: "manual", last_assessed_at: null };
           await setDoc(skillRef, {
             category: cat,
             selfRating: rating,
-            confidence: meta.confidence,
-            evidenceCount: meta.evidence_count,
-            assessmentMethod: meta.method,
-            lastAssessedAt: meta.last_assessed_at,
+            confidence: meta.confidence !== undefined ? meta.confidence : null,
+            evidenceCount: meta.evidence_count !== undefined ? meta.evidence_count : 0,
+            assessmentMethod: meta.method || "manual",
+            lastAssessedAt: meta.last_assessed_at || null,
             reasoning: meta.reasoning || null,
             updatedAt: new Date().toISOString()
           });
@@ -467,8 +467,8 @@ export function DashboardProvider({ children }) {
         for (const proj of payload.projects) {
           const projColRef = collection(db, "users", currentUser.uid, "projects");
           await addDoc(projColRef, {
-            title: proj.title,
-            description: proj.description,
+            title: proj.title || "",
+            description: proj.description || "",
             createdAt: new Date().toISOString()
           });
         }
