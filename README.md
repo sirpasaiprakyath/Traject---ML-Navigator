@@ -6,18 +6,44 @@
 [![Database](https://img.shields.io/badge/Database-Firebase_Firestore-orange?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
 [![LLM Engine](https://img.shields.io/badge/LLM-Gemini_2.0_Flash-cyan?style=for-the-badge&logo=google-gemini)](https://ai.google.dev/)
 
-Traject is a premium, high-fidelity **AI Career Operating System** custom-built for Machine Learning Engineers. It acts as an active vector-tracker, analyzing your technical profile, public GitHub evidence, and resume keyword footprints to construct a tailored, industry-calibrated career roadmap.
+---
 
-Unlike standard career dashboards, Traject is structured around cognitive ergonomics and real-time collaborative AI execution.
+### 🏆 Kaggle x Google AI Agents Hackathon Project
+Traject was engineered and submitted as a production-grade project for the **[Kaggle & Google 5-Day AI Agents Intensive Vibecoding Hackathon](https://www.kaggle.com/competitions/5-day-ai-agents-intensive-vibecoding-course-with-google)**. 
+
+The intensive focused on building advanced, highly responsive, and robust agentic architectures utilizing the Google Gemini API. Traject elevates the "vibecoding" philosophy by delivering a high-fidelity interface backed by a structured FastAPI multi-agent backend.
 
 ---
 
 ## 🧭 The Core Vision & Goal
-The core goal of Traject is to bridge the gap between **raw skills assessment** and **industry readiness**. It elevates the candidate experience through:
+The core goal of Traject is to bridge the gap between **raw skills self-assessment** and **industry readiness** for Machine Learning Engineers. It elevates the candidate experience through:
 - **Objective Calibration**: Comparing candidate ratings across core competencies (ML Knowledge, DSA, MLOps, System Design, SQL, Tools) directly against standard hiring benchmarks.
 - **Evidence Verification**: Scanning active programming footprints (GitHub code density, commits, language patterns) to validate experience rather than relying on self-reporting alone.
 - **Narrative Audits**: Automatically identifying keyword gaps and styling/formatting risks in PDF resumes using an ATS recruiter checklist.
 - **Mentorship Alignment**: Providing structured engineering reviews and risk assessments from a virtual Senior ML Mentor.
+
+---
+
+## 🤖 Multi-Agent Collaboration Engine
+Rather than relying on a single linear prompt or unified query, Traject uses a decentralized, collaborating network of AI agents. Each agent processes dedicated data domains and feeds its outputs into the next stage of the pipeline:
+
+```mermaid
+graph TD
+    User[Onboarding Profile] --> A_Calibrate[1. Profile Calibration Agent]
+    Github[GitHub API Data] --> A_Repo[2. Codebase Footprint Agent]
+    Resume[Resume PDF Extraction] --> A_ATS[3. ATS Resume Auditor Agent]
+    
+    A_Calibrate & A_Repo & A_ATS --> A_Mentor[4. Senior MLE Mentor Agent]
+    
+    A_Mentor --> A_Strategy[5. Strategy & Resource Agent]
+    A_Strategy --> Dashboard[Dynamic Career Roadmap Dashboard]
+```
+
+1. **Profile Calibration Agent**: Maps candidate self-ratings, academic backgrounds, and study schedules against standard industry benchmarks to determine baseline skill gaps.
+2. **Codebase Footprint Agent**: Integrates with the GitHub API to scan repository structures, commits, language ratios, and code complexity signals, translating raw git metrics into verified evidence.
+3. **ATS Resume Auditor Agent**: Extracts structured layout metadata and text sequences from PDF resumes to cross-reference against MLE job keywords and structure requirements.
+4. **Senior MLE Mentor Agent**: Synthesizes inputs from the other agents to perform hiring risk calculations, identifying strong/weak engineering signals and narrative career feedback.
+5. **Strategy & Resource Generator Agent**: Directs gap-closing learning and project roadmaps using `gemini-2.0-flash` structural output templates.
 
 ---
 
