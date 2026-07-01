@@ -1824,7 +1824,6 @@ def is_valid_bullet(line: str) -> bool:
         action_verbs = ["built", "designed", "optimized", "implemented", "deployed", "developed", "created", "led", "worked"]
         if not any(v in cleaned.lower() for v in action_verbs):
             return False
-            
     # 4. Slashes
     if '/' in cleaned and 'http' not in cleaned.lower():
         if ' / ' in cleaned or len(re.findall(r'/', cleaned)) > 1:
@@ -1836,44 +1835,59 @@ def is_valid_bullet(line: str) -> bool:
 def rule_based_rewrite(bullet: str, career_goal: str) -> Dict[str, str]:
     bullet_lower = bullet.lower()
     
+    suggested = "Implemented software engineering best practices for ML projects, improving code readability and collaboration efficiency."
+    reason = "Lacked action verbs and measurable engineering impact metrics."
+    
     if career_goal == "MLE":
-        if any(w in bullet_lower for w in ["model", "machine learning", "deep learning", "train", "pytorch", "tensorflow", "keras"]):
+        if any(w in bullet_lower for w in ["lead", "organized", "leadership", "president", "founder", "head", "manager", "society", "club", "workshop", "conducted", "session", "talk"]):
+            suggested = "Led technical workshops and mentored 50+ students in Python programming, software engineering practices, and ML fundamentals."
+            reason = "Replaces passive organization text with strong leadership action verbs and quantifies impact."
+        elif any(w in bullet_lower for w in ["site", "repository", "app", "website", "system", "software", "development", "web", "github", "live", "link", "online"]):
+            suggested = "Developed and published a live web application, managing version control via GitHub and implementing modern UI/UX practices."
+            reason = "Converts passive naming or links into active software engineering achievements."
+        elif any(w in bullet_lower for w in ["model", "machine learning", "deep learning", "train", "pytorch", "tensorflow", "keras", "cnn", "rnn", "lstm", "transformer"]):
             suggested = "Designed and trained convolutional neural network models in PyTorch, achieving 94% classification accuracy and reducing inference latency by 15%."
             reason = "Replaces passive phrasing with action verbs (Designed, trained) and adds quantitative metrics."
-        elif any(w in bullet_lower for w in ["data", "preprocess", "feature", "sql", "pandas", "numpy", "database"]):
+        elif any(w in bullet_lower for w in ["data", "preprocess", "feature", "sql", "pandas", "numpy", "database", "etl", "query", "tables"]):
             suggested = "Engineered scalable feature pipelines using SQL and Pandas, processing 10M+ rows of data and reducing data loading overhead by 25%."
             reason = "Adds specific tools used and quantifies data size and performance improvement."
-        elif any(w in bullet_lower for w in ["deploy", "serve", "production", "fastapi", "flask", "docker", "kubernetes", "api"]):
+        elif any(w in bullet_lower for w in ["deploy", "serve", "production", "fastapi", "flask", "docker", "kubernetes", "api", "cloud", "aws", "gcp", "azure"]):
             suggested = "Deployed machine learning models using FastAPI and Docker to AWS, handling 50k+ daily API requests with sub-50ms latency."
             reason = "Shows end-to-end MLOps experience and quantifies scale and performance."
-        else:
-            suggested = "Optimized model training pipelines in PyTorch, improving latency by 20% using Distributed Data Parallel and mixed precision."
-            reason = "Lacked action verbs and measurable engineering impact metrics."
             
     elif career_goal == "Data Scientist":
-        if any(w in bullet_lower for w in ["model", "regression", "classification", "predict", "forecast", "xgboost", "scikit-learn"]):
+        if any(w in bullet_lower for w in ["lead", "organized", "leadership", "president", "founder", "manager", "society", "club"]):
+            suggested = "Led data analysis initiatives, organizing technical sessions and presenting key data findings to 30+ stakeholders."
+            reason = "Adds strong leadership metrics and defines the target audience."
+        elif any(w in bullet_lower for w in ["site", "repository", "app", "website", "system", "web", "github"]):
+            suggested = "Built an interactive web dashboard hosted live, presenting statistical analytics findings and tracking customer indicators."
+            reason = "Translates generic web pages into data-driven visualization systems."
+        elif any(w in bullet_lower for w in ["model", "regression", "classification", "predict", "forecast", "xgboost", "scikit-learn"]):
             suggested = "Developed predictive machine learning models using Scikit-Learn, improving business conversion rate by 12% on test datasets."
             reason = "Replaces passive phrasing with strong verbs and quantifies business impact."
         elif any(w in bullet_lower for w in ["data", "analysis", "insight", "tableau", "visualization", "power bi"]):
             suggested = "Analyzed 500k+ customer records using Pandas and SQL to identify key churn drivers, presenting insights via Tableau dashboards."
             reason = "Clearly defines data volume analyzed and the visualization tools used for reporting."
         elif any(w in bullet_lower for w in ["a/b", "experiment", "test", "hypothesis"]):
-            suggested = "Designed and executed A/B testing campaigns, evaluating user engagement across 10k+ active participants with a statistically significant 8% lift."
-            reason = "Quantifies the experiment scale and statistical significance."
-        else:
-            suggested = "Built statistical analysis models in Python, identifying key operational inefficiencies and saving $15k in annual costs."
-            reason = "Lacks strong action verbs and measurable business value."
+            suggested = "Designed and executed statistical A/B tests on landing pages, increasing customer conversion rates by 8% with statistical significance (p < 0.05)."
+            reason = "Details statistical methods and quantifies final business outcomes."
             
-    else: # AI Engineer
-        if any(w in bullet_lower for w in ["llm", "gpt", "openai", "rag", "langchain", "prompt", "vector", "pinecone", "embeddings"]):
-            suggested = "Built a Retrieval-Augmented Generation (RAG) pipeline using LangChain and Pinecone, improving document retrieval accuracy by 22%."
+    elif career_goal == "AI Engineer":
+        if any(w in bullet_lower for w in ["lead", "organized", "leadership", "president", "founder", "manager"]):
+            suggested = "Spearheaded technical groups and designed prompt-engineering workshops, tutoring 40+ developers on LLM architectures."
+            reason = "Replaces passive text with active engineering leadership verbs."
+        elif any(w in bullet_lower for w in ["site", "repository", "app", "website", "system", "web", "github"]):
+            suggested = "Engineered and hosted a live AI-powered application, connecting front-end interfaces to API-based inference endpoints."
+            reason = "Elevates basic web pages to full AI application systems."
+        elif any(w in bullet_lower for w in ["llm", "langchain", "prompt", "rag", "vector", "embedding"]):
+            suggested = "Architected a RAG pipeline using LangChain and a Qdrant vector database, improving retrieval accuracy by 35% and reducing response latency."
+            reason = "Specifies engineering tools and quantifies performance improvements."
+        elif any(w in bullet_lower for w in ["fine-tune", "finetune", "lora", "qlora", "hugging"]):
+            suggested = "Fine-tuned open-source LLMs using LoRA on custom instructions datasets, decreasing token generation costs by 50% while maintaining performance."
             reason = "Details specific AI tools and quantifies retrieval performance gains."
         elif any(w in bullet_lower for w in ["api", "fastapi", "integration", "flask", "serve"]):
             suggested = "Integrated OpenAI API and developed custom FastAPI middleware, processing 100k+ monthly completions with 99.9% uptime."
             reason = "Specifies scale of API usage and system reliability metric."
-        else:
-            suggested = "Fine-tuned Llama models using LoRA and Hugging Face, reducing model size by 40% while preserving benchmark task accuracy."
-            reason = "Lacked specific optimization techniques and target metrics."
             
     return {
         "original": bullet,
@@ -1882,11 +1896,8 @@ def rule_based_rewrite(bullet: str, career_goal: str) -> Dict[str, str]:
     }
 
 
-def rewrite_bullet_with_groq(original: str, career_goal: str) -> Optional[Dict[str, str]]:
-    if not groq_client:
-        return None
-    try:
-        prompt = f"""
+def rewrite_bullet_with_llm(original: str, career_goal: str) -> Optional[Dict[str, str]]:
+    prompt = f"""
 You are an expert technical resume writer and MLE coach.
 Optimize the following weak resume bullet point for a student aiming for a {career_goal} role.
 
@@ -1904,26 +1915,50 @@ Example:
   "reason": "Replaces passive phrasing with action verbs and adds specific tech stack and quantitative performance metrics."
 }}
 """
-        completion = groq_client.chat.completions.create(
-            model="llama3-8b-8192",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that returns only raw JSON."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.2,
-            max_tokens=256,
-            response_format={"type": "json_object"}
-        )
-        res_text = completion.choices[0].message.content.strip()
-        data = json.loads(res_text)
-        if "suggested" in data and "reason" in data:
-            return {
-                "original": original,
-                "suggested": data["suggested"],
-                "reason": data["reason"]
-            }
-    except Exception as e:
-        print(f"Error calling Groq for bullet rewrite: {e}", flush=True)
+    # 1. Try Gemini
+    if gemini_initialized:
+        try:
+            print(f"[Gemini API] Calling gemini-2.0-flash for bullet rewrite...", flush=True)
+            model = genai.GenerativeModel('gemini-2.0-flash')
+            response = model.generate_content(
+                prompt,
+                generation_config={"response_mime_type": "application/json"}
+            )
+            res_text = response.text.strip()
+            data = json.loads(res_text)
+            if "suggested" in data and "reason" in data:
+                return {
+                    "original": original,
+                    "suggested": data["suggested"],
+                    "reason": data["reason"]
+                }
+        except Exception as e:
+            print(f"Error calling Gemini for bullet rewrite: {e}", flush=True)
+
+    # 2. Try Groq
+    if groq_client:
+        try:
+            print(f"[Groq API] Calling llama3-8b-8192 for bullet rewrite...", flush=True)
+            completion = groq_client.chat.completions.create(
+                model="llama3-8b-8192",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that returns only raw JSON."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.2,
+                max_tokens=256,
+                response_format={"type": "json_object"}
+            )
+            res_text = completion.choices[0].message.content.strip()
+            data = json.loads(res_text)
+            if "suggested" in data and "reason" in data:
+                return {
+                    "original": original,
+                    "suggested": data["suggested"],
+                    "reason": data["reason"]
+                }
+        except Exception as e:
+            print(f"Error calling Groq for bullet rewrite: {e}", flush=True)
     return None
 
 
@@ -2017,9 +2052,7 @@ def analyze_resume(
     target_bullets = filtered_candidates[:5]
     bullet_rewrites = []
     for tb in target_bullets:
-        rewrite = None
-        if groq_client:
-            rewrite = rewrite_bullet_with_groq(tb, careerGoal)
+        rewrite = rewrite_bullet_with_llm(tb, careerGoal)
         if not rewrite:
             rewrite = rule_based_rewrite(tb, careerGoal)
         bullet_rewrites.append(rewrite)
